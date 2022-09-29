@@ -26,12 +26,17 @@ public class ShiroFilter extends AccessControlFilter {
      */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
+        log.info("进入预处理器--处理完成进入JwtFilter");
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        httpResponse.setHeader("Access-control-Allow-Origin",httpRequest.getHeader("Origin"));
+        httpResponse.setHeader("Access-control-Allow-Methods","GET,POST,OPTIONS,PUT,DELETE");
+        httpResponse.setHeader("Access-control-Allow-Headers",httpRequest.getHeader("Access-Control-Request-Headers"));
         // 对跨域OPTIONS请求放行
         if (httpRequest.getMethod().equals(RequestMethod.OPTIONS.name())) {
+            log.debug("收到一个OPTIONS请求--"+httpRequest.getRequestURI());
             httpResponse.setStatus(HttpStatus.OK.value());
-            return true;
+            return false;
         }
         return super.preHandle(request, response);
     }

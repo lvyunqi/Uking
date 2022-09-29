@@ -1,6 +1,7 @@
 package com.example.uking.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.shiro.crypto.hash.Md5Hash;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -17,6 +18,11 @@ public class EncryptUtil {
     public static final String HMACSHA1 = "HmacSHA1";
     public static final String DES = "DES";
     public static final String AES = "AES";
+    /**
+     * md5盐
+     */
+    private static final String SALT = "Uking.com";
+    private static final String Key = "mryunqi";
 
     /**编码格式；默认使用uft-8*/
     public static String charset = "utf-8";
@@ -287,6 +293,26 @@ public class EncryptUtil {
         return new String(Base64.decodeBase64(res));
     }
 
+    /**
+     * 密码md5加密
+     *
+     * @param password 密码
+     */
+    public static String md5(String password) {
+        String encryptPasswd = EncryptUtil.desEncode(password,Key);
+        return new Md5Hash(encryptPasswd, SALT, 1024).toString();
+    }
+
+    /**
+     * 密码比对
+     *
+     * @param password    未加密的密码
+     * @param md5password 加密过的密码
+     */
+    public static boolean verifyPassword(String password, String md5password) {
+        String encryptPasswd = EncryptUtil.desEncode(password,Key);
+        return new Md5Hash(encryptPasswd, SALT, 1024).toString().equals(md5password);
+    }
     /**
      *
      * public static void main(String[] args) throws Exception {

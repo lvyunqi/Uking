@@ -1,16 +1,15 @@
 package com.example.uking.service;
 
-import com.example.uking.bean.UserBean;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.uking.entity.User;
 
-import java.util.Map;
+/**
+ * (User)表服务接口
+ *
+ * @author makejava
+ * @since 2022-09-28 17:22:29
+ */
+public interface UserService extends IService<User> {
 
-public interface UserService {
-
-    Map<String, Object> selectUserByPhone(String tel);
-
-    UserBean selectUserById(int id);
-
-    int selectUserNum();
-
-    UserBean addUserBy(int id, String Tel, String password);
 }
+

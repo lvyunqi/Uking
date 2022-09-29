@@ -72,18 +72,20 @@ public class ShiroConfig {
         Map<String, String> filterRuleMap = new LinkedHashMap<String, String>(){
             {
                 // 登录注册放行
-                put("/login", "anon");
-                put("/register", "anon");
-                put("/api/user/**","anon");
+                put("/api/user/login", "anon");
+                put("/api/user/register", "anon");
                 // swagger放行
                 put("/swagger-ui.html", "anon");
                 put("/docs.html","anon");
+                put("/doc.html","anon");
                 put("/swagger-resources", "anon");
                 put("/v2/api-docs", "anon");
                 put("/webjars/springfox-swagger-ui/**", "anon");
                 put("/configuration/security", "anon");
                 put("/configuration/ui", "anon");
                 put("/webjars/**","anon");
+                // druid连接池
+                put("/druid/**","anon");
                 // 任何请求都需要经过jwt过滤器
                 put("/**", "jwt");
             }
