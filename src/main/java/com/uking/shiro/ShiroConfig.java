@@ -60,7 +60,7 @@ public class ShiroConfig {
         // 设置安全管理器
         shiroFilter.setSecurityManager(securityManager);
         // 注册jwt过滤器,也就是将jwtFilter注册到shiro的Filter中，并在下面注册,指定除了login和logout之外的请求都先经过jwtFilter
-        Map<String, Filter> filterMap = new HashMap<String, Filter>(3) {
+        Map<String, Filter> filterMap = new HashMap<>(3) {
             {
                 put("anon", new AnonymousFilter());
                 put("jwt", new ShiroFilter());

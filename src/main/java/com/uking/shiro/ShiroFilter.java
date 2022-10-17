@@ -49,7 +49,7 @@ public class ShiroFilter extends AccessControlFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) {
-        String token = ((HttpServletRequest) servletRequest).getHeader("token");
+        String token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
         if (token == null) {
             return false;
         }
