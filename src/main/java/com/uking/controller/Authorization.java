@@ -7,7 +7,7 @@ import com.uking.entity.User;
 import com.uking.service.UserService;
 import com.uking.util.EncryptUtil;
 import com.uking.util.JwtProvider;
-import com.uking.util.exception.ResponseResult;
+import com.uking.util.code.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

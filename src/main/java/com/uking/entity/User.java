@@ -12,7 +12,6 @@ import java.io.Serializable;
  * @author mryunqi
  * @since 2022-09-27 09:20:50
  */
-@SuppressWarnings("serial")
 @Data
 @TableName(value = "User")
 public class User extends Model<User> {

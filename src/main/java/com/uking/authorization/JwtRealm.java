@@ -1,6 +1,8 @@
 package com.uking.authorization;
 
 import com.uking.util.JwtProvider;
+import com.uking.util.code.BaseResponseCode;
+import com.uking.util.exception.BusinessException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.*;
@@ -55,6 +57,7 @@ public class JwtRealm extends AuthorizingRealm {
         Claims claims = jwtProvider.decodeToken(jwt);
         if (claims == null) {
             throw new IncorrectCredentialsException("Authorization token is invalid");
+            //throw new BusinessException(BaseResponseCode.Authorization_invalid);
         }
         // claims放入全局Subject中
         return new SimpleAuthenticationInfo(claims, jwt, "JwtRealm");
