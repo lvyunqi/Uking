@@ -1,15 +1,16 @@
 package com.uking.util;
 
+import com.uking.util.common.Constant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * token管理
@@ -19,6 +20,7 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtProvider {
+    private final int expire = 1800;
 
     /**
      * 生成token
@@ -26,6 +28,11 @@ public class JwtProvider {
      * @param userId 用户id
      */
     public String createToken(Object userId) {
+        if (RedisUtil.exists(Constant.PREFIX_SHIRO_CACHE + userId)) {
+            RedisUtil.delete(Constant.PREFIX_SHIRO_CACHE + userId);
+        }
+        String currentTimeMillis = String.valueOf(System.currentTimeMillis());
+        RedisUtil.set(Constant.PREFIX_SHIRO_REFRESH_TOKEN + userId, currentTimeMillis, expire);
         return createToken(userId, "UkingWeb-Authorization");
     }
 
@@ -33,11 +40,10 @@ public class JwtProvider {
      * 生成token
      *
      * @param userId   用户id
-     * @param clientId 用于区别客户端，如移动端，网页端，此处可根据自己业务自定义
+     * @param clientId 用于区别客户端，如移动端，网页端，此处可根据业务自定义
      */
     public String createToken(Object userId, String clientId) {
         //@Value("${jwt.expire}")
-        int expire = 18000;
         Date validity = new Date((new Date()).getTime() + expire * 1000);
         return Jwts.builder()
                 // 代表这个JWT的主体，即它的所有人
@@ -78,13 +84,24 @@ public class JwtProvider {
             Claims claims = Jwts.parser().setSigningKey(this.getSecretKey()).parseClaimsJws(token).getBody();
             // 客户端id
             String clientId = claims.getAudience();
-            log.info("客户端ID：{}",clientId);
             // 用户id
             Object userId = claims.get("UUID");
-            log.info("token有效,UUID:{}", userId);
-            return claims;
+            log.info("[{}] UUID:{} 请求鉴权",clientId,userId);
+            Date currentTimeMillis = claims.getIssuedAt();
+            // 开始认证，要AccessToken认证通过，且Redis中存在RefreshToken，且两个Token时间戳一致
+            if (RedisUtil.exists(Constant.PREFIX_SHIRO_REFRESH_TOKEN + userId)) {
+                // 获取RefreshToken的时间戳
+                Date currentTimeMillisRedis = new Date(Long.parseLong(Objects.requireNonNull(RedisUtil.get(Constant.PREFIX_SHIRO_REFRESH_TOKEN + userId))));
+                // 获取AccessToken时间戳，与RefreshToken的时间戳对比 1670407779316
+                if (currentTimeMillis.toString().equals(currentTimeMillisRedis.toString())) {
+                    log.info("UUID:{},鉴权成功", userId);
+                    return claims;
+                }
+                log.error("UUID:{},Redis鉴权失败！",userId);
+                return null;
+            }
+            log.error("UUID:{},鉴权失败！",userId);
         }
-        log.error("***token无效***");
         return null;
     }
 

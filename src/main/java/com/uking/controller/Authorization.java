@@ -7,17 +7,19 @@ import com.uking.entity.User;
 import com.uking.service.UserService;
 import com.uking.util.EncryptUtil;
 import com.uking.util.JwtProvider;
+import com.uking.util.ShiroUtils;
 import com.uking.util.code.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.uking.util.ShiroUtils.Logout;
 
 @Api(value = "Authorization", tags = {"用户鉴权接口"})
 @RestController
@@ -57,7 +59,9 @@ public class Authorization {
     @ApiOperation(value="退出登录", notes="在请求头（headers）放入登录时获取的token")
     @GetMapping("/api/user/logout")
     public ResponseResult<String> logout() {
-        SecurityUtils.getSubject().logout();
+        // 获取当前登录的用户id
+        Long userId = ShiroUtils.getUserId(Long.class);
+        Logout(userId);
         return ResponseResult.ok("成功退出登录");
     }
 }

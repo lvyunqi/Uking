@@ -33,6 +33,7 @@ public class User extends Model<User> {
     private String aff;
     
     private Integer verifyEmail;
+    private Integer authentication;
     
     private String industry;
     
@@ -63,10 +64,7 @@ public class User extends Model<User> {
     private Integer loginLock;
     
     private Integer adminLock;
-    
-    private String appId;
-    
-    private String apiKey;
+
 
     /**
      * 获取主键值

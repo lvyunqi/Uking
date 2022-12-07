@@ -86,10 +86,11 @@ public class UserController {
     }
 
     /**
-     * 获取用户
+     * 获取用户UUID
      */
+    @ApiOperation(value="获取用户UUID")
     @RequiresAuthentication
-    @GetMapping("/api/user/getUser")
+    @GetMapping("/api/user/getUserUUID")
     public ResponseResult<Long> getUser() {
         // 获取当前登录的用户id
         Long userId = ShiroUtils.getUserId(Long.class);

@@ -2,8 +2,10 @@ package com.uking.shiro;
 
 import com.alibaba.fastjson2.JSON;
 import com.uking.authorization.JwtToken;
-import com.uking.util.exception.ResponseResult;
+import com.uking.util.code.ResponseResult;
+import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +14,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 需要认证的url经过该过滤器
@@ -26,7 +29,7 @@ public class ShiroFilter extends AccessControlFilter {
      */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-        log.info("进入预处理器--处理完成进入JwtFilter");
+        // log.info("进入预处理器--处理完成进入JwtFilter");
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         httpResponse.setHeader("Access-control-Allow-Origin",httpRequest.getHeader("Origin"));
@@ -49,8 +52,8 @@ public class ShiroFilter extends AccessControlFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) {
-        String token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
-        if (token == null) {
+        /*String token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
+        if (StringUtils.isBlank(token)) {
             return false;
         }
         try {
@@ -58,8 +61,8 @@ public class ShiroFilter extends AccessControlFilter {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }
-        return true;
+        }*/
+        return false;
     }
 
     /**
@@ -67,11 +70,28 @@ public class ShiroFilter extends AccessControlFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+        String token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         httpResponse.setHeader("Content-Type", "application/json;charset=UTF-8");
+        if (StringUtils.isBlank(token)) {
+            ResponseResult<String> resp = ResponseResult.fail(ResponseResult.RespCode.TOKEN_NOT_NULL_ERROR);
+            httpResponse.getWriter().write(JSON.toJSONString(resp));
+            return false;
+        }
+        try {
+            getSubject(servletRequest, servletResponse).login(new JwtToken(token));
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseResult<String> resp = ResponseResult.fail(ResponseResult.RespCode.UNAUTHORIZED);
+            httpResponse.getWriter().write(JSON.toJSONString(resp));
+            return false;
+        }
+
+        /*HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+        httpResponse.setHeader("Content-Type", "application/json;charset=UTF-8");
         ResponseResult<String> resp = ResponseResult.fail(ResponseResult.RespCode.UNAUTHORIZED);
-        httpResponse.getWriter().write(JSON.toJSONString(resp));
-        return false;
+        httpResponse.getWriter().write(JSON.toJSONString(resp));*/
+        return true;
     }
 
 }

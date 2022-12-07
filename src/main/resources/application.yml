@@ -12,6 +12,15 @@ spring:
   application:
     name: Uking # 应用名称
 
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 3000ms
+    timeout: 3000ms
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver  # 数据库驱动
     url: jdbc:mysql://111.172.243.59:3306/uking?serverTimezone=GMT%2B8  # 数据库连接地址
@@ -86,9 +95,4 @@ mybatis-plus:
   global-config:
     banner: false
 
-jwt:
-  # 密钥
-  secret: UkingMryunqi434253
-  # 有效期（秒）
-  expire: 18000 #5小时
 

@@ -1,5 +1,6 @@
 package com.uking.util;
 
+import com.uking.util.common.Constant;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -62,8 +63,10 @@ public class ShiroUtils {
     /**
      * 退出登录
      */
-    public static void logout() {
-        geSubject().logout();
+    public static void Logout(Long userId) {
+        //geSubject().logout();
+        SecurityUtils.getSubject().logout();
+        RedisUtil.delete(Constant.PREFIX_SHIRO_REFRESH_TOKEN + userId);
     }
 
 }
