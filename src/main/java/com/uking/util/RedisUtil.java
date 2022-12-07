@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @ Program       :  com.uking.utils.RedisUtil
  * @ Description   :  redis工具类
  * @ Author        :  mryunqi
- * @ CreateDate    :  2020-12-7 17:12
+ * @ CreateDate    :  2022-12-7 17:12
  */
 @Component
 public class RedisUtil {
